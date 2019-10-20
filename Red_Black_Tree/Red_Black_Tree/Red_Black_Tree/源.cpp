@@ -21,23 +21,24 @@ public:
 class Red_Black_Tree {
 	Node* root;
 	//Node nil{ 'b', 0, nullptr, nullptr }; //多个参数类成员变量只能这么声明
-	Node nil = Node{ -1, 'b' };
+	Node* nil = new Node{ -1, 'b' };	//***注意: 这里如果声明NOde nil, 后面的成员函数虽然无法修改nil的值，但有可能改变其地址
 public:
 	Red_Black_Tree() {
-		root = &nil;
+		root = nil;
 	}
 	Red_Black_Tree(vector<int> Init_Vector) {
+		root = nil;
 		int len = Init_Vector.size();
 		for (int i = 0; i != len; i++) {
 			Insert(Init_Vector[i]);
 		}
 	}
-	~Red_Black_Tree() {
+	/*~Red_Black_Tree() {	//为什么return *this 会自动调用析构？？？
 		DistoryTree(root);
-		delete &nil;
-	}
+		delete nil;
+	}*/
 	void DistoryTree(Node* root) {
-		if (root != &nil) {
+		if (root != nil) {
 			DistoryTree(root->left);
 			DistoryTree(root->right);
 			delete(root);
@@ -45,9 +46,9 @@ public:
 	}
 	Red_Black_Tree Insert(int k) {					//BST插入部分综合了空树和正常树的两种情况，让前驱从nil开始，挺巧的
 		Node* insert = new Node{ k, 'r' };	//新节点置红色
-		Node* former = &nil;
+		Node* former = nil;
 		Node* latter = root;
-		while (latter != &nil) {
+		while (latter != nil) {
 			former = latter;
 			if (k < latter->key) {
 				latter = latter->left;
@@ -56,7 +57,7 @@ public:
 				latter = latter->right;
 			}
 		}
-		if (former == &nil) {	//空树，没有former节点
+		if (former == nil) {	//空树，没有former节点
 			root = insert;
 		}
 		else {	//不是空树，处理该节点的父节点指针域
@@ -68,10 +69,10 @@ public:
 			}
 		}
 		insert->p = former;
-		insert->left = &nil;
-		insert->right = &nil;
+		insert->left = nil;
+		insert->right = nil;
 		RBInsertFixup(insert);
-		return (*this);
+		return *this;
 	}
 	void RBInsertFixup(Node* z) {	//调整为红黑树
 		while (z->p->color == 'r') {	//最后处理z是根的情况, 是根的情况不会进入循环，若父亲不是r也没必要调整
@@ -116,23 +117,23 @@ public:
 					}
 				}
 			}
-			root->color = 'b';	//防止插入的点是根节点，将根用黑色覆盖
 		}
+		root->color = 'b';	//防止插入的点是根节点，将根用黑色覆盖
 	}
-	Red_Black_Tree Delete(Node* z) {
+	Red_Black_Tree Pointer_Delete(Node* z) {
 		Node* y;
-		if (z->left == &nil || z->right == &nil) {
+		if (z->left == nil || z->right == nil) {
 			y = z;
 		}
 		else {
 			y = z->right;
-			while (y->left != &nil) {
+			while (y->left != nil) {
 				y = y->left;
 			}
 		}
-		Node* x = (y->left != &nil) ? y->left : y->right;	//node x 是y的下一个
+		Node* x = (y->left != nil) ? y->left : y->right;	//node x 是y的下一个
 		x->p = y->p;		//x的父节点变成y的父节点
-		if (y->p == &nil) {	//如果y是根，y->p->left，right无意义
+		if (y->p == nil) {	//如果y是根，y->p->left，right无意义
 			root = x;
 		}
 		else {
@@ -152,13 +153,20 @@ public:
 		delete y;
 		return *this;
 	}
+	Red_Black_Tree Key_Delete(int k) {
+		Node* WaitToDelete = Find(k);
+		if (WaitToDelete != nil) {
+			Pointer_Delete(WaitToDelete);
+		}
+		return *this;
+	}
 	void RBDeleteFixup(Node* x) {
 		while (x != root || x->color == 'b') {	//只要x仍然为双黑或者不是根就进行下去
 			if (x == x->p->left) {	//case1 2 3 4
 				Node* sib = x->p->right;
 				if (sib->color == 'r') {//case1: 不会转移到自身，所以下面的条件没有加else
 					sib->color = 'b';
-					x->p->color == 'r';
+					x->p->color = 'r';
 					Right_Rotate(x->p);
 					sib = x->p->right;
 				}
@@ -214,11 +222,11 @@ public:
 	void Left_Rotate(Node* x) {	//假设x的右孩子不是nil,左旋以x为根的树
 		Node* y = x->right;		//step1：将\beta连接到x的右孩子
 		x->right = y->left;
-		if (y->left != &nil) {	//nil节点的p无实际意义	
+		if (y->left != nil) {	//nil节点的p无实际意义	
 			y->left->p = x;
 		}
 		y->p = x->p;			//step2：将y连接到x的p节点
-		if (x->p == &nil) {		//如果x是root，x的parent没有left子域
+		if (x->p == nil) {		//如果x是root，x的parent没有left子域
 			root = y;
 		}
 		else if (x == x->p->left) {
@@ -233,11 +241,11 @@ public:
 	void Right_Rotate(Node* x) {	//右旋以x为根的树
 		Node* y = x->left;
 		x->left = y->right;
-		if (y->right != &nil) {
+		if (y->right != nil) {
 			y->right->p = x;
 		}
 		y->p = x->p;
-		if (x->p == &nil) {
+		if (x->p == nil) {
 			root = y;
 		}
 		else if (x->p->left == x) {
@@ -249,7 +257,29 @@ public:
 		y->right = x;
 		x->p = y;
 	}
+	Node* Find(int k) {
+		return Search(k, root);
+	}
+	Node* Search(int k, Node* root) {
+		if (root != nil) {
+			if (root->key == k) {
+				return root;
+			}
+			else if (k < root->key) {
+				return Search(k, root->left);
+			}
+			else {
+				return Search(k, root->right);
+			}
+		}
+		else {
+			return root;
+		}
+	}
 };
 int main() {
-
+	Red_Black_Tree RBT({ 1, 3, 4, 5, 6, 7, 8, 9 });
+	RBT.Insert(2);
+	RBT.Key_Delete(6);
+	system("pause");
 }
