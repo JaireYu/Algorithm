@@ -33,10 +33,10 @@ public:
 			Insert(Init_Vector[i]);
 		}
 	}
-	/*~Red_Black_Tree() {	//为什么return *this 会自动调用析构？？？
+	~Red_Black_Tree() {	//为什么return *this 会自动调用析构？？？
 		DistoryTree(root);
 		delete nil;
-	}*/
+	}
 	void DistoryTree(Node* root) {
 		if (root != nil) {
 			DistoryTree(root->left);
@@ -44,7 +44,7 @@ public:
 			delete(root);
 		}
 	}
-	Red_Black_Tree Insert(int k) {					//BST插入部分综合了空树和正常树的两种情况，让前驱从nil开始，挺巧的
+	void Insert(int k) {					//BST插入部分综合了空树和正常树的两种情况，让前驱从nil开始，挺巧的
 		Node* insert = new Node{ k, 'r' };	//新节点置红色
 		Node* former = nil;
 		Node* latter = root;
@@ -72,7 +72,7 @@ public:
 		insert->left = nil;
 		insert->right = nil;
 		RBInsertFixup(insert);
-		return *this;
+		//return *this;
 	}
 	void RBInsertFixup(Node* z) {	//调整为红黑树
 		while (z->p->color == 'r') {	//最后处理z是根的情况, 是根的情况不会进入循环，若父亲不是r也没必要调整
