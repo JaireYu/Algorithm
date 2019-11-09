@@ -1,9 +1,11 @@
-#include<iostream>
+ï»¿#include<iostream>
 #include<fstream>
 #include<vector>
 #include<algorithm>
 #include<math.h>
 #include<string>
+#include <cstdlib>
+#include<windows.h>
 using namespace std;
 struct vertex {
 	double x;
@@ -28,7 +30,7 @@ int Partition(vector<vertex>& vertexset, int b, int e, char x_or_y) {
 	if (x_or_y == 'x') {
 		double Axisvalue = vertexset[e].x;
 		for (int j = b; j < e; j++) {
-			//j±éÀúÊı×é£¬ÕÒµ½Ğ¡ÓÚÖáÖµµÄ¾Í·ÅÔÚiµÄ×ó±ß
+			//jéå†æ•°ç»„ï¼Œæ‰¾åˆ°å°äºè½´å€¼çš„å°±æ”¾åœ¨içš„å·¦è¾¹
 			if (vertexset[j].x <= Axisvalue) {
 				i = i + 1;
 				Swap(vertexset, i, j);
@@ -39,7 +41,7 @@ int Partition(vector<vertex>& vertexset, int b, int e, char x_or_y) {
 	else {
 		double Axisvalue = vertexset[e].y;
 		for (int j = b; j < e; j++) {
-			//j±éÀúÊı×é£¬ÕÒµ½Ğ¡ÓÚÖáÖµµÄ¾Í·ÅÔÚiµÄ×ó±ß
+			//jéå†æ•°ç»„ï¼Œæ‰¾åˆ°å°äºè½´å€¼çš„å°±æ”¾åœ¨içš„å·¦è¾¹
 			if (vertexset[j].y <= Axisvalue) {
 				i = i + 1;
 				Swap(vertexset, i, j);
@@ -87,7 +89,7 @@ BestPair Merge(const vector<vertex_pos>& Mid_Place, const double& Delta) {
 	for (int i = 0; i != n; i++) {
 		for (int j = i + 1; j < i + 8 && j < n; j++) {
 			double potential = distance(Mid_Place[j].a, Mid_Place[i].a);
-			if (potential < min_distance /*&& Mid_Place[j].pos != Mid_Place[i].pos*/) { //ÎªÊ²Ã´ÓĞÕâ¾ä¾Í²»ĞĞ£¿£¿
+			if (potential < min_distance && Mid_Place[j].pos != Mid_Place[i].pos) { 
 				Merge_Best.a = Mid_Place[i].a;
 				Merge_Best.b = Mid_Place[j].a;
 				Merge_Best.Distance = potential;
@@ -102,8 +104,8 @@ BestPair BF_Get_Nearest_Vertex(const vector<vertex>& vertextset, int a, int b) {
 	vertex t1{ INT_MAX, INT_MAX };
 	vertex t2{ INT_MAX, INT_MAX };
 	BestPair t{ t1, t2, INT_MAX };
-	for (int i = a; i != b; i++) {
-		for (int j = i + 1; j < b; j++) {
+	for (int i = a; i <= b; i++) {
+		for (int j = i + 1; j <= b; j++) {
 			double temp = distance(vertextset[i], vertextset[j]);
 			if (temp < min_distance) {
 				t.a = vertextset[i];
@@ -128,9 +130,9 @@ BestPair Get_Nearest_Vertex(const vector<vertex>& vertexset, const vector<vertex
 		BestPair temp1 = Get_Nearest_Vertex(vertexset, vertexset_ysort, begin, Mid_Num);
 		BestPair temp2 = Get_Nearest_Vertex(vertexset, vertexset_ysort, Mid_Num + 1, end);
 		double Delta = min(temp1.Distance, temp2.Distance);
-		double left = vertexset[Mid_Num + 1].x - Delta;	//¼ÆËã×ó½ç
-		double right = vertexset[Mid_Num].x + Delta;		//¼ÆËãÓÒ½ç
-		if (left <= vertexset[Mid_Num].x && right >= vertexset[Mid_Num + 1].x) {	//ºÏÀí·¶Î§(¼ôÖ¦£¬Ô­Ëã·¨µÄ¸Ä½ø)
+		double left = vertexset[Mid_Num + 1].x - Delta;	//è®¡ç®—å·¦ç•Œ
+		double right = vertexset[Mid_Num].x + Delta;		//è®¡ç®—å³ç•Œ
+		if (left <= vertexset[Mid_Num].x && right >= vertexset[Mid_Num + 1].x) {	//åˆç†èŒƒå›´(å‰ªæï¼ŒåŸç®—æ³•çš„æ”¹è¿›)
 			vector<vertex_pos> Mid_Place;
 			int n = vertexset.size();
 			for (int i = 0; i != n; i++) {
@@ -154,13 +156,20 @@ BestPair Get_Nearest_Vertex(const vector<vertex>& vertexset, const vector<vertex
 		}
 	}
 }
-
+/*
 int main() {
+	LARGE_INTEGER m_nFreq;
+	LARGE_INTEGER m_endTime;
+	LARGE_INTEGER m_beginTime;
+	QueryPerformanceFrequency(&m_nFreq); // è·å–æ—¶é’Ÿå‘¨æœŸ
+	QueryPerformanceCounter(&m_beginTime);//è·å–å½“å‰æ—¶é—´
 	for (int i = 1; i != 100; i++) {
+		double runtime_BF = 0;
+		double runtime_ALG = 0;
 		vector<vertex> vertexset;
 		int n = 200;
 		ifstream inputfile;
-		inputfile.open("C:\\Users\\yujiarui\\Desktop\\" + to_string(i) + ".txt", ios::in);
+		inputfile.open("D:\\GithubLocalRepo\\Algorithm\\Nearest_Vertex\\Nearest_Vertex\\Debug\\test" + to_string(i) + ".txt", ios::in);
 		for (int i = 0; i != n; i++) {
 			double x, y;
 			inputfile >> x;
@@ -168,17 +177,28 @@ int main() {
 			vertex V{ x, y };
 			vertexset.push_back(V);
 		}
+		if (n < 2) {
+			cout << "Too little! Nearest distance is: " << INFINITY;
+			return 0;
+		}
+		cout << "Case " << i << endl;
 		Qsort(vertexset, 0, n - 1, 'x');
 		vector<vertex> vertexset_ysort;
 		vertexset_ysort.assign(vertexset.begin(), vertexset.end());
 		Qsort(vertexset_ysort, 0, n - 1, 'y');
-		BestPair Nearest_Vertex = Get_Nearest_Vertex(vertexset, vertexset_ysort, 0, n);
-		BestPair compare = BF_Get_Nearest_Vertex(vertexset, 0, n);
-		if (/*((compare.a.x != Nearest_Vertex.a.x || compare.a.y != Nearest_Vertex.a.y
+		QueryPerformanceCounter(&m_beginTime);//è·å–å½“å‰æ—¶é—´
+		BestPair Nearest_Vertex = Get_Nearest_Vertex(vertexset, vertexset_ysort, 0, n-1);
+		QueryPerformanceCounter(&m_endTime);//è·å–å½“å‰æ—¶é—´
+		runtime_ALG += (double)(m_endTime.QuadPart - m_beginTime.QuadPart) / m_nFreq.QuadPart;
+		QueryPerformanceCounter(&m_beginTime);//è·å–å½“å‰æ—¶é—´
+		BestPair compare = BF_Get_Nearest_Vertex(vertexset, 0, n-1);
+		QueryPerformanceCounter(&m_endTime);//è·å–å½“å‰æ—¶é—´
+		runtime_BF += (double)(m_endTime.QuadPart - m_beginTime.QuadPart) / m_nFreq.QuadPart;
+		if (((compare.a.x != Nearest_Vertex.a.x || compare.a.y != Nearest_Vertex.a.y
 			|| compare.b.x != Nearest_Vertex.b.x || compare.b.y != Nearest_Vertex.b.y) &&
 			(compare.a.x != Nearest_Vertex.b.x || compare.a.y != Nearest_Vertex.b.y
 				|| compare.b.x != Nearest_Vertex.a.x || compare.b.y != Nearest_Vertex.a.y))
-			||*/ abs(compare.Distance - Nearest_Vertex.Distance) > 0.00001){ 
+			|| abs(compare.Distance - Nearest_Vertex.Distance) > 0.00001){ 
 			cout << Nearest_Vertex.a.x << endl;
 			cout << Nearest_Vertex.a.y << endl;
 			cout << Nearest_Vertex.b.x << endl;
@@ -192,6 +212,8 @@ int main() {
 		}
 		else {
 			cout << "TRUE" << endl;
+			cout << "BF_time:\t" << runtime_BF << endl;
+			cout << "ALG_time:\t" << runtime_ALG << endl;
 			cout << Nearest_Vertex.a.x << endl;
 			cout << Nearest_Vertex.a.y << endl;
 			cout << Nearest_Vertex.b.x << endl;
@@ -207,8 +229,7 @@ int main() {
 	}
 	system("pause");
 	
-}
-/*
+}*/
 int main() {
 	int n;
 	cout << "Type the number of vertex" << endl;
@@ -222,14 +243,18 @@ int main() {
 		vertex V{ x, y };
 		vertexset.push_back(V);
 	}
+	if (n < 2) {
+			cout << "Too little! Nearest distance is: " << INFINITY;
+			return 0;
+	}
 	Qsort(vertexset, 0, n - 1, 'x');
 	vector<vertex> vertexset_ysort;
 	vertexset_ysort.assign(vertexset.begin(), vertexset.end());
 	Qsort(vertexset_ysort, 0, n - 1, 'y');
-	BestPair Nearest_Vertex = Get_Nearest_Vertex(vertexset, vertexset_ysort, 0, n);
+	BestPair Nearest_Vertex = Get_Nearest_Vertex(vertexset, vertexset_ysort, 0, n - 1);
 	cout << "The nearest vertex pair is: ";
 	cout << "(" << Nearest_Vertex.a.x << ", " << Nearest_Vertex.a.y << ")    ";
 	cout << "(" << Nearest_Vertex.b.x << ", " << Nearest_Vertex.b.y << ")" << endl;
 	cout << "The nearest distance is: "<< Nearest_Vertex.Distance << endl;
 	system("pause");
-}*/
+}
