@@ -156,14 +156,16 @@ BestPair Get_Nearest_Vertex(const vector<vertex>& vertexset, const vector<vertex
 		}
 	}
 }
-/*
+
 int main() {
 	LARGE_INTEGER m_nFreq;
 	LARGE_INTEGER m_endTime;
 	LARGE_INTEGER m_beginTime;
 	QueryPerformanceFrequency(&m_nFreq); // 获取时钟周期
 	QueryPerformanceCounter(&m_beginTime);//获取当前时间
-	for (int i = 1; i != 100; i++) {
+	int error = 0;
+	int true1 = 0;
+	for (int i = 0; i != 100; i++) {
 		double runtime_BF = 0;
 		double runtime_ALG = 0;
 		vector<vertex> vertexset;
@@ -214,22 +216,21 @@ int main() {
 			cout << "TRUE" << endl;
 			cout << "BF_time:\t" << runtime_BF << endl;
 			cout << "ALG_time:\t" << runtime_ALG << endl;
-			cout << Nearest_Vertex.a.x << endl;
-			cout << Nearest_Vertex.a.y << endl;
-			cout << Nearest_Vertex.b.x << endl;
-			cout << Nearest_Vertex.b.y << endl;
-			cout << compare.a.x << endl;
-			cout << compare.a.y << endl;
-			cout << compare.b.x << endl;
-			cout << compare.b.y << endl;
-			cout << compare.Distance << endl;
-			cout << Nearest_Vertex.Distance << endl;
+			if (runtime_ALG > runtime_BF) {
+				error++;
+			}
+			else {
+				true1++;
+			}
 		}
 
 	}
+	cout << "Divide and Conquer win " << true1 << "\%" << endl;
+	cout << "BF win " << error << "\%" << endl;
 	system("pause");
 	
-}*/
+}
+/*
 int main() {
 	int n;
 	cout << "Type the number of vertex" << endl;
@@ -258,3 +259,4 @@ int main() {
 	cout << "The nearest distance is: "<< Nearest_Vertex.Distance << endl;
 	system("pause");
 }
+*/

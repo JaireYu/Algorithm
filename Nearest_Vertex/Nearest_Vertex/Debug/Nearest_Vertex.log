@@ -1,1 +1,4 @@
-﻿  Nearest_Vertex.vcxproj -> D:\GithubLocalRepo\Algorithm\Nearest_Vertex\Debug\Nearest_Vertex.exe
+﻿  Nearest_Vertex.cpp
+d:\githublocalrepo\algorithm\nearest_vertex\nearest_vertex\nearest_vertex.cpp(228): warning C4129: “%”: 不可识别的字符转义序列
+d:\githublocalrepo\algorithm\nearest_vertex\nearest_vertex\nearest_vertex.cpp(229): warning C4129: “%”: 不可识别的字符转义序列
+  Nearest_Vertex.vcxproj -> D:\GithubLocalRepo\Algorithm\Nearest_Vertex\Debug\Nearest_Vertex.exe
